@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CONNECTIONS</title>
+  <meta name="description" content="Find groups of four related items.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- Ambient Atmospheric Background -->
+  <div class="lounge-background" aria-hidden="true">
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+    <div class="ambient-glow glow-3"></div>
+    <div class="lounge-bottom-light"></div>
+    <div id="garnish-container" class="garnish-container"></div>
+    <div class="glass-reflections"></div>
+  </div>
+
+  <div class="app-viewport">
+    
+    <!-- INITIALIZATION OVERLAY -->
+    <section id="screen-loading" class="screen screen-loading" aria-label="Loading Application">
+      <div class="loading-content">
+        <h1 class="platform-game-title">CONNECTIONS</h1>
+        <p id="loading-status-text">Verifying release schedule...</p>
+        <button id="btn-retry-init" class="btn btn-primary is-hidden" type="button">Try Again</button>
+      </div>
+    </section>
+
+    <!-- MAIN MENU SCREEN -->
+    <section id="screen-menu" class="screen screen-menu is-hidden" aria-label="Main Menu">
+      <header class="menu-header">
+        <h1 class="platform-game-title">CONNECTIONS</h1>
+      </header>
+
+      <div class="today-hero-card" id="today-hero-card">
+        <div class="hero-top-strip">
+          <span class="hero-day-pill" id="menu-day-pill">TODAY’S PUZZLE</span>
+          <span class="hero-diff-pill" id="menu-diff-pill">DIFFICULTY</span>
+        </div>
+        <h2 class="hero-puzzle-title" id="menu-puzzle-title">Puzzle Title</h2>
+        <div class="hero-status-row">
+          <span class="hero-status-indicator" id="menu-status-text">Ready</span>
+        </div>
+        <button id="btn-play-today" class="btn btn-primary btn-hero" type="button">
+          <span id="btn-play-today-text">PLAY</span>
+        </button>
+      </div>
+
+      <nav class="menu-nav-grid" aria-label="Game Modes">
+        <button id="btn-menu-vault" class="menu-card-btn" type="button">
+          <span class="menu-card-title">VAULT</span>
+        </button>
+        <button id="btn-menu-stats" class="menu-card-btn" type="button">
+          <span class="menu-card-title">STATISTICS</span>
+        </button>
+        <button id="btn-menu-help" class="menu-card-btn" type="button">
+          <span class="menu-card-title">HOW TO PLAY</span>
+        </button>
+      </nav>
+
+      <footer class="menu-footer">
+        <button id="btn-menu-sound" class="btn btn-secondary btn-sound-control" type="button" aria-pressed="true" aria-label="Toggle Sound">
+          <span id="menu-sound-text">SOUND: ON</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- ACTIVE GAMEPLAY SCREEN -->
+    <section id="screen-game" class="screen screen-game is-hidden" aria-label="Active Game Board">
+      <header class="game-top-bar">
+        <button id="btn-back-to-menu" class="btn btn-secondary" type="button">MENU</button>
+        <h2 class="game-top-title">CONNECTIONS</h2>
+        <div class="game-top-actions">
+          <button id="btn-game-sound" class="btn btn-secondary" type="button">SOUND</button>
+        </div>
+      </header>
+
+      <section class="meta-strip" aria-label="Puzzle details">
+        <div class="meta-pill day-pill">
+          <span id="puzzle-date-label" class="meta-val">YYYY-MM-DD</span>
+        </div>
+        <div class="meta-pill diff-pill" id="puzzle-diff-pill">
+          <span id="puzzle-difficulty">DIFFICULTY</span>
+        </div>
+      </section>
+
+      <div id="solved-categories-stack" class="solved-categories" aria-live="polite" aria-atomic="true"></div>
+
+      <main id="grid-container" class="board-grid" role="group" aria-label="Tiles grid"></main>
+
+      <section class="status-panel" aria-label="Game progress">
+        <span class="status-label">Mistakes remaining:</span>
+        <div id="mistake-indicators" class="mistake-dots" aria-label="4 attempts remaining">
+          <span class="dot filled" aria-hidden="true"></span>
+          <span class="dot filled" aria-hidden="true"></span>
+          <span class="dot filled" aria-hidden="true"></span>
+          <span class="dot filled" aria-hidden="true"></span>
+        </div>
+      </section>
+
+      <footer class="action-bar">
+        <button id="btn-shuffle" class="btn btn-secondary" type="button">Shuffle</button>
+        <button id="btn-deselect" class="btn btn-secondary" type="button" disabled>Deselect</button>
+        <button id="btn-submit" class="btn btn-primary" type="button" disabled>Submit</button>
+      </footer>
+    </section>
+
+    <!-- THE VAULT SCREEN -->
+    <section id="screen-vault" class="screen screen-vault is-hidden" aria-label="The Vault Archive">
+      <header class="vault-screen-header">
+        <button id="btn-vault-back-menu" class="btn btn-secondary" type="button">MENU</button>
+        <h2 class="vault-main-title">VAULT</h2>
+      </header>
+
+      <div class="vault-body">
+        <div id="vault-list" class="vault-list-container"></div>
+      </div>
+
+      <footer class="vault-screen-footer">
+        <button id="btn-vault-go-today" class="btn btn-primary btn-full" type="button">Today's Puzzle</button>
+      </footer>
+    </section>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast" class="toast" role="status" aria-live="assertive"></div>
+
+  <!-- How to Play Modal -->
+  <div id="modal-help" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div class="modal-card">
+      <header class="modal-header">
+        <h2 id="help-title" class="modal-title">HOW TO PLAY</h2>
+        <button class="btn-close-modal" data-close="modal-help" aria-label="Close">X</button>
+      </header>
+      <div class="modal-body">
+        <ul class="help-rules-list">
+          <li>Find groups of four related items.</li>
+          <li>Select four tiles and tap Submit.</li>
+          <li>Complete the puzzle without making 4 mistakes.</li>
+        </ul>
+        <div class="category-legend">
+          <div class="legend-row legend-yellow">
+            <span class="legend-swatch"></span>
+            <div class="legend-info">Straightforward connections.</div>
+          </div>
+          <div class="legend-row legend-green">
+            <span class="legend-swatch"></span>
+            <div class="legend-info">Developing concepts.</div>
+          </div>
+          <div class="legend-row legend-blue">
+            <span class="legend-swatch"></span>
+            <div class="legend-info">Technical knowledge.</div>
+          </div>
+          <div class="legend-row legend-purple">
+            <span class="legend-swatch"></span>
+            <div class="legend-info">Wordplay and subtle links.</div>
+          </div>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button class="btn btn-primary btn-full" data-close="modal-help">Close</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Statistics Modal -->
+  <div id="modal-stats" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+    <div class="modal-card">
+      <header class="modal-header">
+        <h2 id="stats-title" class="modal-title">STATISTICS</h2>
+        <button class="btn-close-modal" data-close="modal-stats" aria-label="Close">X</button>
+      </header>
+      <div class="modal-body">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span class="stat-number" id="stat-played">0</span>
+            <span class="stat-name">Played</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="stat-win-pct">0%</span>
+            <span class="stat-name">Win Rate</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="stat-streak">0</span>
+            <span class="stat-name">Streak</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="stat-max-streak">0</span>
+            <span class="stat-name">Max Streak</span>
+          </div>
+        </div>
+        <p class="stats-note">Zero mistakes: <strong id="stat-zero-mistakes" class="gold-num">0</strong></p>
+      </div>
+      <footer class="modal-footer">
+        <button class="btn btn-secondary btn-full" data-close="modal-stats">Close</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Result Modal -->
+  <div id="modal-result" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="result-title">
+    <div class="modal-card">
+      <header class="modal-header">
+        <h2 id="result-title" class="modal-title">RESULT</h2>
+        <button class="btn-close-modal" data-close="modal-result" aria-label="Close">X</button>
+      </header>
+      <div class="modal-body">
+        <div class="result-banner" id="result-banner">
+          <span id="result-badge" class="result-badge">STATUS</span>
+          <p id="result-msg" class="result-msg">Message</p>
+        </div>
+        <div id="result-emoji-grid" class="result-emoji-grid" aria-label="Result pattern"></div>
+      </div>
+      <footer class="modal-footer modal-footer-actions">
+        <button id="btn-share" class="btn btn-primary btn-full" type="button">Share</button>
+        <button id="btn-result-menu" class="btn btn-secondary btn-full" type="button">Menu</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
